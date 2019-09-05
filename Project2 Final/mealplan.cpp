@@ -1,6 +1,6 @@
-//Danning Yu 305-087-992
+//Danning Yu
 //Project 2 - Bruin Meal Plan Calculator
-//TO DO: Check logic and timely program termination
+
 #include <iostream>
 #include <string>
 using namespace std;
