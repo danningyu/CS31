@@ -1,5 +1,5 @@
 Danning Yu
-UCLA ID: 305087992
+UCLA ID: ---------
 
 For step 5, one set of input that provided nonsensical results was if I put in an integer that was negative. This caused at least one party percentage to be negative, which does not make sense in real life. Also, certain combinations of integer input for number of seats held, such as -10 for Democrats, 1 for Republicans, and 100 for Independents, caused percentage of seats held to be greater than 100% (in this case, Independents), which also does not make sense.
 Another set of input that provided unusual results was if 0 was inputted for the seats of all 3 parties. This caused "-nan(ind)%" to be reported for each party percentage and the final result was control going to the Democrats. This error is not unexpected because if all three seats held are 0, then there will be division by 0 in the program, which is not possible. 
