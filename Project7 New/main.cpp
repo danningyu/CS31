@@ -1,5 +1,5 @@
 //CS31 Project 7
-//Danning Yu, 305087992
+//Danning Yu
 //Adapted from PigSkeleton code given on CCLE.
 
 #include <iostream>
