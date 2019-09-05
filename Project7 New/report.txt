@@ -1,0 +1,168 @@
+Danning Yu, 305087992
+CS31 Project 7
+
+Project Report
+
+a. The main obstacle I had to overcome was figuring out how all the classes (Die, Player, Board, and Pig) interacted with each other to create a full game. Because the skeleton code was provided for me, I was not able to structure the program in my own way, so I had to understand how it was structured. Another obstacle was setting the score to 0 when the turn ended but also updating the total with the score while being careful to not double count. I accomplished this by setting the total to the current total plus the score and then setting the score to 0 (order matters). Also, specifically handling the case of the die rolling a 1, causing the score to be set to 0 and the turn to be over was an special case that I had to handle. Finally, I had to make sure that no changes could be made once the game was over (that is, the winning score was met or exceeded), so I had to surround many of my implementations of updating the scores and totals to check first (with an if-statement) if the game was already over.
+
+b. My test code is below. To test the Pig class more thoroughly, I created two helper functions, getHuman() and getComputer(), which allow for access to the mHuman and mComputer data members in the Pig class, and using these functions, I could directly check their current scores.
+
+	Die d; //declaring objects for testing
+	Player p;
+	Board b;
+	Pig game;
+
+	//test code for die
+	for (int i = 0; i < 50; i++) {
+		d.roll();
+		int a = d.getValue();
+		assert(a <= 6 && a >= 1);
+	}
+
+	//test code for plyaer
+	assert(p.getScore() == 0); //starting score is 0
+	assert(p.getTotal() == 0); //starting total is 0
+	assert(p.roll(2) == 2); //should return 2
+	assert(p.getScore() == 2); //current score should be 2
+	assert(p.getTotal() == 0); //current total should be 0 because turn not ended
+	assert(p.roll(4) == 4); //rolling a 4 should return a 4
+	assert(p.getScore() == 6); //total score should be a 6
+	assert(p.getTotal() == 0); //total score should still be 0
+	p.endTurn();
+	assert(p.getTotal() == 6); //total score should be 6 now
+	assert(p.getScore() == 0); //score should be 0 (should have been moved to total)
+	assert(p.roll(3) == 3); //rolling a 3 should return a 3
+	assert(p.getTotal() == 6); //total should be unchanged
+	p.endTurn();
+	assert(p.getTotal() == 9); //6+3=9
+	assert(p.getScore() == 0); //score should be reset
+	assert(p.roll(3) == 3);
+	assert(p.roll(1) == 1); //should return 1 for rolling a 1
+	assert(p.getScore() == 0); //if rolled a 1, score should be set to 0
+	p.endTurn();
+	assert(p.getTotal() == 9); //score should be unchanged because 1 was rolled
+
+	//test code for board
+	assert(b.getComputerScore() == 0); //starting value should be 0
+	assert(b.getComputerTotal() == 0); //starting value should be 0
+	assert(b.getHumanScore() == 0); //starting value should be 0
+	assert(b.getHumanTotal() == 0); //starting value should be 0
+	assert(b.getRolledValue() == 0); //starting value should be 0
+	assert(b.isGameOver() == false); //game should not be over at first
+	assert(b.isHumanTurn() == true); //should start out with human's turn
+	assert(b.isHumanWinner() == false); //human should not be winner at first
+	b.setRolledValue(4); //set rolled value to 4
+	assert(b.getRolledValue() == 4); //rolled value should be 4
+	b.setHumanScore(10);
+	assert(b.getHumanScore() == 10); //human score should be set to 10
+	b.setHumanScore(15);
+	assert(b.getHumanScore() == 15); //check if human score is updated	
+	b.setHumanTotal(12);
+	assert(b.getHumanTotal() == 12); //check if human total is updated	
+	b.setComputerScore(5);
+	assert(b.getComputerScore() == 0); //computer score should still be 0 because currently not the computer's turn
+	b.setComputerTotal(13);
+	assert(b.getComputerTotal() == 0); //computer total should still be 0 because currently not the computer's turn
+	b.setComputerTurn(); //make it the computer's turn
+	b.setComputerScore(6);
+	assert(b.getComputerScore() == 6); //computer score should be set to 5
+	b.setComputerScore(10);
+	assert(b.getComputerScore() == 10); //check if computer score is updated
+	b.setComputerTotal(14);
+	assert(b.getComputerTotal() == 14); //check if computer total is updated
+	b.setHumanScore(16);
+	assert(b.getHumanScore() == 15); //human score should stay the same because not the human's turn
+	b.setHumanTotal(13);
+	assert(b.getHumanTotal() == 12); //human total should stay the same because not the human's turn
+	b.setGameOver(true);
+	b.setComputerScore(4);
+	assert(b.getComputerScore() == 10); //computer score should not be updated because game is over
+	b.setComputerTotal(4);
+	assert(b.getComputerTotal() == 14); //computer total should not be updated because game is over
+	b.setHumanScore(3);
+	assert(b.getHumanScore() == 15); //human score should stay the same because game is over
+	b.setHumanTotal(3);
+	assert(b.getHumanTotal() == 12); //human score should stay the same because game is over
+
+	//test code for pig
+	assert(game.determineGameOutcome() == Pig::GAMEOUTCOME::GAMENOTOVER);
+	assert(game.getHuman().getScore() == 0); //starting human score should be 0
+	assert(game.getHuman().getTotal() == 0); //starting human total should be 0
+	assert(game.getComputer().getScore() == 0); //starting computer score should be 0
+	assert(game.getComputer().getTotal() == 0); //starting computer total should be 0
+	game.humanPlay(2);
+	assert(game.getHuman().getScore() == 2); //score should be updated
+	assert(game.getHuman().getTotal() == 0); //total should still be 0
+	game.humanPlay(3);
+	assert(game.getHuman().getScore() == 5); //score should be updated
+	game.humanEndTurn();
+	assert(game.getHuman().getTotal() == 5); //total should be updated because turn is over
+	assert(game.getHuman().getScore() == 0); //score should be reset to 0	
+	assert(game.determineGameOutcome() == Pig::GAMEOUTCOME::GAMENOTOVER); //game should not be over yet
+	assert(game.isGameOver() == false); //game should not be over yet
+	game.computerPlay(4); //repeat the tests above for the computer
+	assert(game.getComputer().getScore() == 4); //score should be updated
+	assert(game.getComputer().getTotal() == 0); //total should still be 0
+	game.computerPlay(5);
+	assert(game.getComputer().getScore() == 9); //score should be updated
+	game.computerEndTurn();
+	assert(game.getComputer().getTotal() == 9); //total should be updated because turn is over
+	assert(game.getComputer().getScore() == 0); //score should be reset to 0
+	assert(game.determineGameOutcome() == Pig::GAMEOUTCOME::GAMENOTOVER); //game should not be over yet
+	assert(game.isGameOver() == false); //game should not be over yet
+	game.humanPlay(6);
+	game.humanPlay(6);
+	game.humanPlay(6);
+	game.humanPlay(6);
+	game.humanPlay(2);
+	assert(game.getHuman().getScore() == 26); //score should be 26 at this point
+	assert(game.isGameOver() == false); //game should not be over yet because total was not updated yet
+	game.humanEndTurn();
+	assert(game.getHuman().getTotal() == 31); //total should be updated because turn is over
+	assert(game.determineGameOutcome() == Pig::GAMEOUTCOME::HUMANWONGAME); //human won game because their score is 31
+	assert(game.determineGameOutcome() != Pig::GAMEOUTCOME::COMPUTERWONGAME); //computer should not have won game
+	assert(game.isGameOver() == true); //game should be over
+	game.computerPlay(5); //rolling after game is over...should not change anything
+	game.computerPlay(5);
+	game.computerPlay(5);
+	game.computerPlay(6);
+	assert(game.getComputer().getScore() == 0); //score should still be 0 (due to previous reset due to endturn)
+	game.computerEndTurn();
+	assert(game.getComputer().getTotal() == 9); //total should still be 9
+	assert(game.isGameOver() == true); //game should still be over
+	assert(game.determineGameOutcome() == Pig::GAMEOUTCOME::HUMANWONGAME); //outcome should not be changed
+
+	//test the computer winning the game
+	Pig game1;
+	game1.humanPlay(6);
+	game1.humanEndTurn();
+	game1.computerPlay(6);
+	game1.computerPlay(6);
+	game1.computerPlay(6);
+	game1.computerPlay(6);
+	game1.computerPlay(6);
+	game1.computerPlay(6);
+	assert(game1.isGameOver() == false); //game should not be over yet
+	assert(game1.determineGameOutcome() == Pig::GAMEOUTCOME::GAMENOTOVER); //game should not be over yet
+	game1.computerEndTurn();
+	assert(game1.determineGameOutcome() == Pig::GAMEOUTCOME::COMPUTERWONGAME); //computer should win game
+
+	Pig game2; //now test both computer and player have scores of >=30 - human should win
+	game2.humanPlay(6);
+	game2.humanPlay(6);
+	game2.humanPlay(6);
+	game2.humanPlay(6);
+	game2.humanPlay(6);
+	game2.humanPlay(6);
+	assert(game2.isGameOver() == false); //game should not be over yet
+	assert(game2.determineGameOutcome() == Pig::GAMEOUTCOME::GAMENOTOVER); //game should not be over yet
+	game2.humanEndTurn();
+	game2.computerPlay(6);
+	game2.computerPlay(6);
+	game2.computerPlay(6);
+	game2.computerPlay(6);
+	game2.computerPlay(6);
+	game2.computerPlay(6);
+	game2.computerEndTurn();
+	assert(game2.isGameOver() == true); //game should not be over now
+	assert(game2.determineGameOutcome() == Pig::GAMEOUTCOME::HUMANWONGAME); //human should win game

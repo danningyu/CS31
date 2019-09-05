@@ -1,0 +1,91 @@
+Danning Yu, 305087992
+CS31 Project 4
+2/18/19
+
+a. One obstacle I had to overcome was out of bounds errors, which I avoided by being careful when coding to make sure the indices that were called for the arrays were never out of bounds. I did this by sketching out my solutions on paper first, which allowed me to make mistakes and discover them before I coded the solution. Another obstacle was searching through every character of every element of the array, which I did by using a nested for-loop. Overall, this project felt much easier than project 3, so aside from being very careful to avoid out of bounds errors, there were not really any other major obstacles. 
+
+b. My test cases were as follows, where some were borrowed from the examples given in the project specification and other new ones were created. I used the assert function to make the test cases easier. New string arrays were made for the shiftRight(...) and replaceAllCharacters(...) functions because they modify the array. All of these test cases were handled correctly.
+
+string test1[8] = {"samwell", "jon", "margaery", "daenerys","tyrion", "sansa", "howard123", "jon" };
+string test2[6] = { "alpha", "beta", "gamma", "gamma", "beta", "delta" };
+string test3[5] = { "samwell", "jon", "margaery", "daenerys", "tyrion" };
+string test4[3] = { "", "", "" };
+string test5[5] = { "123456", "&*(ABC", "foo" };
+string test6[12] = {"samwell", "jon", "margaery", "daenerys", "tyrion", "sansa", "howard123", "hello" };
+string test7[6] = { "hello","abc",  "Project 4", "CS31", "ABC", "!Bang" };
+string test8[3] = { "Hello", "Goodbye", "Goodbye" };
+
+assert(hasDuplicates(test1, 3) == false); //checks if duplicates are present for partial array
+assert(hasDuplicates(test1, 8) == true); //checks if duplicates are present for full array
+assert(hasDuplicates(test6, 10) == true); //checks for duplicates for an array that was only partially assigned values (assumes all other values were initialized to "", resulting in duplicates)
+assert(hasDuplicates(test4, 3) == true); //checks for duplicates involving empty strings
+assert(hasDuplicates(test1, 0) == false); //checks the case where size is 0
+assert(hasDuplicates(test1, -1) == false); //checks the case where size is negative
+
+assert(countAllDigits(test1, 8) == 3); //checks if the right number is counted
+assert(countAllDigits(test5, 3) == 6); //checks if the right number is counted
+assert(countAllDigits(test2, 6) == 0); //checks if it detects no digits
+assert(countAllDigits(test1, 6) == 0); //checks if it detects no digits
+assert(countAllDigits(test1, 3) == 0); //checks if no digits detected for partial array
+assert(countAllDigits(test5, 1) == 6); //checks if digits detected for partial array
+assert(countAllDigits(test1, 0) == -1); //checks the case where size is 0
+assert(countAllDigits(test1, -2) == -1); //checks the case where size is negative
+
+assert(isInDecreasingOrder(test7, 5) == true); //checks if is in decreasing order
+assert(isInDecreasingOrder(test1, 5) == false); //checks if not in decreasing order
+assert(isInDecreasingOrder(test4, 3) == false); //checks if duplicates are returned as not decreasing
+assert(isInDecreasingOrder(test2, 3) == false); //checks if not in decreasing order
+assert(isInDecreasingOrder(test8, 2) == true); //checks for partial arraay
+assert(isInDecreasingOrder(test8, 3) == false); //checks for a full array
+assert(isInDecreasingOrder(test1, -1) == false); //checks for negative size parameter
+assert(isInDecreasingOrder(test1, 0) == true); //checks for size parameter as 0, should return 0
+
+assert(find(test1, 8, "jon") == 1); //checks for when there are multiple occurrences and that it returns the first one
+assert(find(test1, 8, "howard123") == 6); //checks the right value is returned
+assert(find(test2, 6, "gamma") == 2); //checks the right value is returned
+assert(find(test2, 6, "zeta") == -1); //checks it returns -1 when element that doesn't exist is searched for
+assert(find(test2, 0, "gamma") == -1); //checks it returns -1 when element doesn't exist if only part of an array is being searched
+assert(find(test4, 3, "") == 0); //checks if it can handle empty strings
+assert(find(test8, -2, "Goodbye") == -1); //checks for negative size parameter
+
+//make a new string for testing the shiftRight method
+string test1A[8] = {"samwell", "jon", "margaery", "daenerys", "tyrion", "sansa", "howard123", "jon" };
+
+assert(shiftRight(test1A, 6, 5, "foo") == 5); //checks if the right value is returned
+assert(test1A[0] == "foo" && test1A[1] == "foo" && test1A[2] == "foo" && test1A[3] == "foo"); //checks if array values were changed correctly
+assert(test1A[5] == "samwell"); //checks if array values were changed correctly
+assert(shiftRight(test4, 3, 2, "Hello") == 2); //checks if it handles empty strings
+assert(test4[0] == "Hello" && test4[1] == "Hello"); //checks if array values were changed correctly
+assert(test4[2] == ""); //checks if array values were changed correctly
+assert(shiftRight(test4, 0, 0, "Hello") == 0); //checks if it handles case where size and amount are both 0
+assert(shiftRight(test4, -1, 0, "Hello") == -1); //checks if it handles case where size is negative
+assert(shiftRight(test4, 0, -1, "Hello") == -1); //checks if it handles case where amount is negative
+assert(shiftRight(test2, 5, 1, "gamma") == 1); //sees if it handles shifting where there are two consecutive identical elements
+assert(test2[0] == "gamma"); //checks if array values were changed correctly
+assert(test2[1] == "alpha"); //checks if array values were changed correctly
+assert(test2[2] == "beta"); //checks if array values were changed correctly
+assert(test2[3] == "gamma" && test2[4] == "gamma"); //checks if array values were changed correctly
+	
+//make new strings for testing the replaceAllCharacters method
+string test1B[8] = {"samwell", "jon", "margaery", "daenerys", "tyrion", "sansa", "howard123", "jon" };
+string test2B[6] = { "alpha", "beta", "gamma", "gamma", "beta", "delta" };
+string test3B[5] = { "samwell", "jon", "margaery", "daenerys", "tyrion" };
+string test4B[3] = { "", "", "" };
+string test5B[5] = { "123456", "&*(ABC", "foo" };
+string test6B[12] = {"samwell", "jon", "margaery", "daenerys", "tyrion", "sansa", "howard123", "hello" };
+string test7B[6] = { "hello","abc",  "Project 4", "CS31", "ABC", "!Bang" };
+string test8B[3] = { "Hello", "Goodbye", "Goodbye" };
+
+assert(replaceAllCharacters(test1B, 5, 'z', 'a') == 0); //checks if it returns 0 when the desired letter to be found does not exist in the string
+	assert(replaceAllCharacters(test1B, 8, 's', 'H') == 4); //checks if correct value is returned
+	assert(replaceAllCharacters(test1B, -1, 'j', 'd') == -1); //checks if -1 is returned when given negative size parameter
+	assert(replaceAllCharacters(test1B, 0, 'd', 'f') == -1); //checks if -1 is return when size parameter is 0
+	assert(test1B[0] == "Hamwell"); //checks if array element was correctly replaced
+	assert(test1B[1] == "jon" && test1B[7] == "jon"); //checks if array element was correctly replaced
+	assert(test1B[2] == "margaery"); //checks if array element was correctly replaced
+	assert(test1B[3] == "daeneryH"); //checks if array element was correctly replaced
+	assert(test1B[4] == "tyrion"); //checks if array element was correctly replaced
+	assert(test1B[5] == "HanHa"); //checks if array element was correctly replaced
+	assert(test1B[6] == "howard123"); //checks if array element was correctly replaced
+	assert(replaceAllCharacters(test7B, 6, '3', '9') == 1); //checks if it correctly handles numbers as parameters
+	assert(test7B[3] == "CS91"); //checks of array element was correctly replaced

@@ -1,0 +1,154 @@
+Danning Yu, 305087992
+CS31, Project 5
+
+Report
+
+a. One obstacle I had to overcome was figuring out how to handle the enumeration contained within the Ticket class and use it in the main.cpp and BoxOffice.cpp file so that the compiler would not throw errors when the code was compiled. I solved this by realizing that KIND is a "class" or "structure" of sorts contained within Ticket, so thus, to use it anywhere else, I had to use the :: operator to make that clear. Simply doing KIND::CONCERT would not work; I had to do Ticket::KIND::CONCERT. Another challenge was modifying the price of each ticket, as the price data member was a private function. In order to see the current price and modify it, I had to use the getPrice() and setPrice() functions. Finally, the last challenge was being careful that when objects were being created, the parameters were passed in the exact same order as the constructor. This is because the functions in BoxOffice.cpp can have various parameters missing, so one cannot simply take the parameters and copy paste them to create a Ticket object. For example, although buyTicket took in string row, int seat, string event, string venue, Ticket::KIND kind, and string daytime, when creating the Ticket object I had to be careful to set the price to 0. Forgetting to take price into account would result in a compiler error.
+
+b. My test cases are as follows. I basically tested all possible cases of the ticket objects, plus the special case of empty strings. All of my test cases passed.
+
+//constants to make object creation easier (less typing)
+const string ORCHESTRA = "Orchestra Row A";
+const string BALCONY = "Balcony Row B";
+const int SEAT = 7;
+const string EVENT = "EVENT NAME";
+const string ROYCE = "Royce Hall";
+const string DAY = "October 1, 7:30AM";
+const string NIGHT = "October 1, 7:30PM";
+BoxOffice b;
+
+//Tests empty string
+Ticket empTicket = b.buyTicket("", 0, "", "", Ticket::KIND::CONCERT, ""); 
+assert(empTicket.getRow() == "");
+assert(empTicket.getSeat() == 0);
+assert(empTicket.getEvent() == "");
+assert(empTicket.getVenue() == "");
+assert(to_string(empTicket.getPrice()) == "0.000000"); //checks if price is set to 0;
+assert(empTicket.getKind() == Ticket::KIND::CONCERT); //checks if getKind() works
+assert(empTicket.getDayTime() == ""); //checks if getDayTime() works
+
+
+//Tests buyTicket(...)
+Ticket t1 = b.buyTicket("Floor", SEAT, "Lecture", "Powell", Ticket::KIND::ATHLETICGAME, DAY); 
+assert(t1.getRow() == "Floor"); //checks if getRow() works
+assert(t1.getSeat() == 7); //checks if getSeat() works
+assert(t1.getEvent() == "Lecture"); //checks if getEvent() works
+assert(t1.getVenue() == "Powell"); //checks if getVenue() works
+assert(to_string(t1.getPrice()) == "0.000000"); //checks if price is set to 0;
+t1.setPrice(11.00); //set the price to a nonzero value
+assert(to_string(t1.getPrice()) == "11.000000"); //checks if price set correctly
+assert(t1.getKind() == Ticket::KIND::ATHLETICGAME); //checks if getKind() works
+assert(t1.getDayTime() == DAY); //checks if getDayTime() works
+
+//Tests buyRoyceHallStudentTicket(...)
+t1 = b.buyRoyceHallStudentTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, DAY);
+assert(t1.getRow() == "Orchestra Row A"); //checks if getRow() works
+assert(t1.getSeat() == 7); //checks if getSeat() works
+assert(t1.getEvent() == "EVENT NAME"); //checks if getEvent() works
+assert(t1.getVenue() == "Royce Hall"); //checks if getVenue() works
+assert(to_string(t1.getPrice()) == "120.000000"); //checks price for orchestra, student, athletic game, day
+t1.setPrice(11.00); //change the price
+assert(to_string(t1.getPrice()) == "11.000000"); //checks if price set correctly
+assert(t1.getKind() == Ticket::KIND::ATHLETICGAME); //checks if getKind() works
+assert(t1.getDayTime() == "October 1, 7:30AM"); //checks if getDayTime() works
+
+t1 = b.buyRoyceHallStudentTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, NIGHT);
+assert(to_string(t1.getPrice()) == "120.000000"); //checks price for orchestra, student, athletic game, night
+t1 = b.buyRoyceHallStudentTicket(BALCONY, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, DAY);
+assert(to_string(t1.getPrice()) == "45.000000"); //checks price for balcony, student, athletic game, day
+t1 = b.buyRoyceHallStudentTicket(BALCONY, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, NIGHT);
+assert(to_string(t1.getPrice()) == "45.000000"); //checks price for balcony, student, athletic game, night
+t1 = b.buyRoyceHallStudentTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::CONCERT, DAY);
+assert(to_string(t1.getPrice()) == "70.000000"); //checks price for orchestra, student, concert during day
+t1 = b.buyRoyceHallStudentTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::CONCERT, NIGHT);
+assert(to_string(t1.getPrice()) == "100.000000"); //checks price for orchestra, student, concert during night 
+t1 = b.buyRoyceHallStudentTicket(BALCONY, SEAT, EVENT, Ticket::KIND::CONCERT, DAY);
+assert(to_string(t1.getPrice()) == "20.000000"); //checks price for balcony, student, concert during day
+t1 = b.buyRoyceHallStudentTicket(BALCONY, SEAT, EVENT, Ticket::KIND::CONCERT, NIGHT);
+assert(to_string(t1.getPrice()) == "35.000000"); //checks price for balcony,  student, concert during night
+t1 = b.buyRoyceHallStudentTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::MOVIE, DAY);
+assert(to_string(t1.getPrice()) == "20.000000"); //price for orchestra, movie, student, during day
+t1 = b.buyRoyceHallStudentTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::MOVIE, NIGHT);
+assert(to_string(t1.getPrice()) == "20.000000"); //etc...checking the rest of the cases
+t1 = b.buyRoyceHallStudentTicket(BALCONY, SEAT, EVENT, Ticket::KIND::MOVIE, DAY);
+assert(to_string(t1.getPrice()) == "10.000000");
+t1 = b.buyRoyceHallStudentTicket(BALCONY, SEAT, EVENT, Ticket::KIND::MOVIE, NIGHT);
+assert(to_string(t1.getPrice()) == "10.000000");
+t1 = b.buyRoyceHallStudentTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::OTHER, DAY);
+assert(to_string(t1.getPrice()) == "50.000000");
+t1 = b.buyRoyceHallStudentTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::OTHER, NIGHT);
+assert(to_string(t1.getPrice()) == "80.000000");
+t1 = b.buyRoyceHallStudentTicket(BALCONY, SEAT, EVENT, Ticket::KIND::OTHER, DAY);
+assert(to_string(t1.getPrice()) == "10.000000");
+t1 = b.buyRoyceHallStudentTicket(BALCONY, SEAT, EVENT, Ticket::KIND::OTHER, NIGHT);
+assert(to_string(t1.getPrice()) == "25.000000");
+
+//Tests buyRoyceHallSTAFFTicket(...)
+t1 = b.buyRoyceHallStaffTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, DAY);
+assert(to_string(t1.getPrice()) == "130.000000");
+//checks price for orchestra staff athletic game day
+t1 = b.buyRoyceHallStaffTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, NIGHT);
+assert(to_string(t1.getPrice()) == "130.000000"); //checks price for orchestra staff athletic game night
+t1 = b.buyRoyceHallStaffTicket(BALCONY, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, DAY);
+assert(to_string(t1.getPrice()) == "55.000000"); //checks price for balcony staff athletic game day
+t1 = b.buyRoyceHallStaffTicket(BALCONY, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, NIGHT);
+assert(to_string(t1.getPrice()) == "55.000000"); //checks price for balcony staff athletic game night
+t1 = b.buyRoyceHallStaffTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::CONCERT, DAY);
+assert(to_string(t1.getPrice()) == "80.000000"); //checks price for orchestra, concert during day
+t1 = b.buyRoyceHallStaffTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::CONCERT, NIGHT);
+assert(to_string(t1.getPrice()) == "110.000000"); //checks price for orchestra, concert during night 
+t1 = b.buyRoyceHallStaffTicket(BALCONY, SEAT, EVENT, Ticket::KIND::CONCERT, DAY);
+assert(to_string(t1.getPrice()) == "30.000000"); //checks price for balcony, concert during day
+t1 = b.buyRoyceHallStaffTicket(BALCONY, SEAT, EVENT, Ticket::KIND::CONCERT, NIGHT);
+assert(to_string(t1.getPrice()) == "45.000000"); //checks price for balcony, concert during night
+t1 = b.buyRoyceHallStaffTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::MOVIE, DAY);
+assert(to_string(t1.getPrice()) == "22.500000"); //etc...the various other combinations
+t1 = b.buyRoyceHallStaffTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::MOVIE, NIGHT);
+assert(to_string(t1.getPrice()) == "22.500000");
+t1 = b.buyRoyceHallStaffTicket(BALCONY, SEAT, EVENT, Ticket::KIND::MOVIE, DAY);
+assert(to_string(t1.getPrice()) == "11.250000");
+t1 = b.buyRoyceHallStaffTicket(BALCONY, SEAT, EVENT, Ticket::KIND::MOVIE, NIGHT);
+assert(to_string(t1.getPrice()) == "11.250000");
+t1 = b.buyRoyceHallStaffTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::OTHER, DAY);
+assert(to_string(t1.getPrice()) == "60.000000");
+t1 = b.buyRoyceHallStaffTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::OTHER, NIGHT);
+assert(to_string(t1.getPrice()) == "90.000000");
+t1 = b.buyRoyceHallStaffTicket(BALCONY, SEAT, EVENT, Ticket::KIND::OTHER, DAY);
+assert(to_string(t1.getPrice()) == "20.000000");
+t1 = b.buyRoyceHallStaffTicket(BALCONY, SEAT, EVENT, Ticket::KIND::OTHER, NIGHT);
+assert(to_string(t1.getPrice()) == "35.000000");
+
+//tests buyRoyceHallTicket
+t1 = b.buyRoyceHallTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, DAY);
+assert(to_string(t1.getPrice()) == "150.000000"); //checks price for orchestra regular ticket athletic game day
+assert(t1.getDayTime() == "October 1, 7:30AM"); //checks if getDayTime() works}
+t1 = b.buyRoyceHallTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, NIGHT);
+assert(to_string(t1.getPrice()) == "150.000000"); //checks price for orchestra regular athletic game night
+t1 = b.buyRoyceHallTicket(BALCONY, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, DAY);
+assert(to_string(t1.getPrice()) == "75.000000"); //checks price for balcony regular athletic game day
+t1 = b.buyRoyceHallTicket(BALCONY, SEAT, EVENT, Ticket::KIND::ATHLETICGAME, NIGHT);
+assert(to_string(t1.getPrice()) == "75.000000"); //checks price for balcony regular athletic game night
+t1 = b.buyRoyceHallTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::CONCERT, DAY);
+assert(to_string(t1.getPrice()) == "100.000000"); //checks price for orchestra, concert during day
+t1 = b.buyRoyceHallTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::CONCERT, NIGHT);
+assert(to_string(t1.getPrice()) == "130.000000"); //checks price for orchestra, concert during night 
+t1 = b.buyRoyceHallTicket(BALCONY, SEAT, EVENT, Ticket::KIND::CONCERT, DAY);
+assert(to_string(t1.getPrice()) == "50.000000"); //checks price for balcony, concert during day
+t1 = b.buyRoyceHallTicket(BALCONY, SEAT, EVENT, Ticket::KIND::CONCERT, NIGHT);
+assert(to_string(t1.getPrice()) == "65.000000"); //checks price for balcony, concert during night
+t1 = b.buyRoyceHallTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::MOVIE, DAY);
+assert(to_string(t1.getPrice()) == "25.000000"); //other test cases, etc...
+t1 = b.buyRoyceHallTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::MOVIE, NIGHT);
+assert(to_string(t1.getPrice()) == "25.000000");
+t1 = b.buyRoyceHallTicket(BALCONY, SEAT, EVENT, Ticket::KIND::MOVIE, DAY);
+assert(to_string(t1.getPrice()) == "12.500000");
+t1 = b.buyRoyceHallTicket(BALCONY, SEAT, EVENT, Ticket::KIND::MOVIE, NIGHT);
+assert(to_string(t1.getPrice()) == "12.500000");
+t1 = b.buyRoyceHallTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::OTHER, DAY);
+assert(to_string(t1.getPrice()) == "80.000000");
+t1 = b.buyRoyceHallTicket(ORCHESTRA, SEAT, EVENT, Ticket::KIND::OTHER, NIGHT);
+assert(to_string(t1.getPrice()) == "110.000000");
+t1 = b.buyRoyceHallTicket(BALCONY, SEAT, EVENT, Ticket::KIND::OTHER, DAY);
+assert(to_string(t1.getPrice()) == "40.000000");
+t1 = b.buyRoyceHallTicket(BALCONY, SEAT, EVENT, Ticket::KIND::OTHER, NIGHT);
+assert(to_string(t1.getPrice()) == "55.000000");

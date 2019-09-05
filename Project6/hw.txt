@@ -1,0 +1,103 @@
+Danning Yu, 305087992
+CS31 Project 6
+3/3/19
+
+1. (a) The fixed code is shown below:
+#include <iostream>
+using namespace std;
+int main(){
+	int arr[4] = { 0, 1, 2, 3 };
+        int* ptr = arr;
+
+        *ptr = arr[ 1 ];               // set arr[0] to 1
+        *(ptr + 1) = arr[ 0 ] * 10;    // set arr[1] to 10
+        ptr += 2; 
+        ptr[0] = arr[ 1 ] * 10;        // set arr[2] to 100
+        ptr[1] = 1000;                 // set arr[3] to 1000
+	ptr = ptr + 1;
+        while (ptr >= arr){
+		cout << " " << *ptr;    // print values            
+		ptr--; 
+            
+        }
+        cout << endl; 
+        return( 0 ); 
+    }
+
+Before the while, ptr must be incremented one last time so that it is pointing to the last value of the array. In the while loop, ptr-- should come before printing the value of *ptr, or else 1000 will not be printed.
+
+(b) To fix the findLastZero function, the int* p taken as a parameter must be taken as pass by reference. Otherwise, the value of ptr in the main() function will never be changed. Thus, change the function declaration to:
+
+void findLastZero(int arr[], int n, int* &p){...}
+
+(c) The fixed main function is shown below:
+
+int main(){
+	int x = 0;
+        int* p = &x;
+        biggest(15, 20, p); 
+        cout << "The biggest value is " << *p << endl;
+        return( 0 );
+}
+
+
+The bugs were that p was being declared as a pointer but it was not iniitalized to any value, so it is pointing to a garbage location. Thus, when the biggest function is called, it sets the valueat the garbage memory address to be the larger value, which causes it to not work. Thus, we must create some other variable first (x in this case) and then point p towards that variable before using it in the biggest() function.
+
+(d) The issue with its implementation is that str1 and str2 are arrays, not pointers. Thus, str1 in the function needs to changed to *str1 in the condition for the while loop, in the if-statement, and in the str1==str2 statement. This way, one is using the element of that string, and not the address of the element of that string. Also, the the zero bytes should be changed to '\0'. The corrected code is shown below:
+
+bool match(const char str1[], const char str2[]){
+	bool result = true;
+	while (*str1 != 0 && *str2 != 0){ // zero bytes at ends 
+		if (*str1 != *str2){  // compare corresponding characters
+			result = false;
+			break;
+		}
+		str1++;            // advance to the next character
+		str2++;
+	}
+	if (result){
+		result = (*str1 == *str2);    // both ended at same time?
+	}
+	return(result);
+}
+
+
+(e) The issue is in the computeFibonacciSequence function, where it is creating a new array but the scope of that array is in that function, so it will be deleted when that function finshes running. Thus, the ptr in the main() function cannot be initialized, causing an error.
+
+2. They are matched as follows:
+
+1 - f
+2 - g
+3 - a
+4 - b
+5 - d
+6 - c
+7 - b
+8 - e
+9 - h
+
+3. The program prints diff = 1 and then 4 79 5 9 -1 19. 
+Starting array: {5, 3, 4, 17, 22, 19}
+This is because minimart(array, &array[2]) is comparing the 1st element (array) and the 3rd element (&array[2]). 5 is not smaller than 4, so int* ptr is initialized to the 3rd element of the array. Then, ptr[1] sets the 4th element of the array to 9. Now the array is {5, 3, 4, 9, 22, 19}.
+Then, ptr +=2 means ptr now points to the 5th element of the array. *ptr = -1 sets this 5th element to -1. Now the array is {5, 3, 4, 9, -1, 19}.
+*(array+1) sets the second element to 79. Now the array is {5, 79, 4, 9, -1, 19}.
+Then, the difference between the address of array[5] (&array[5]), which is the sixth element, and ptr, which currently points to the 5th element, is 1. Thus, diff = 1. 
+The swap1 function takes two pointers a and b and changes it so that a points to b and b points to a. However, because the pointers are not passed by reference, this does nothing. 
+Then, swap2 takes pointers a and b, sets the value of temp to the value a is pointing to, then sets the value a is pointing to to the value b is pointing to, and then sets the value b is pointing to equal to temp, which is just the value a was originally pointing to. Thus, when swap2(array, &array[2]) is called, it essentially swaps the first and third elements. Now the array is {4, 79, 5, 9, -1, 19}. 
+The final for loop simply prints out all the values of the array, leading to the answer of 4 79 5 9 -1 19.
+
+4. The function is given below.
+
+void deleteDigits(char* str) {
+	char *ptr = str;
+	while (*str != '\0') {
+		if (*str >= 48 && *str <= 57) { //48 is ASCII for 0, 57 is ASCII for 9
+			ptr = str; //digit detected so update ptr
+			while (*ptr != '\0') {
+				*ptr = *(ptr + 1); //shift all values left by 1
+				ptr++;
+			}
+		}
+		else {str++;}
+	}
+}

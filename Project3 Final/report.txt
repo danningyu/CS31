@@ -1,0 +1,82 @@
+Danning Yu, 305087992
+CS 31 Project 3
+Report
+
+a. The biggest obstacle as a whole was the numerous possible inputs for this project, both legal and nonlegal. To overcome this, I used numerous if statements throughout the code to ensure the string being processed was legal. I wrote 3 functions to check if a given character is a number, check if a given character is a nonzero number, and if a given string is composed entirely of whitespace. 
+
+Another obstacle was handling the fact that there could be any amount of whitespace between the various values, which I solved by using a whileloop to delete whitespace until it reached a nonwhitespace character. 
+
+Also, to accomadate for strings of varying lengths, I used the substr method extensively to eliminate processed data from the string. Using this in combination with removing leading whitespace meant I could always guarantee that a good string had the data I needed to process starting at the 0th index. However, using substr poses the risk of out-of-bounds errors, which I overcame by checking the string for a minimum length before processing it. If it is less than the minimum length needed for a valid string, then isValidRowerString automatically flags it as a bad string (because data must be missing). 
+
+b. The entire program is built around the isValidRowerString method. The variables minutesRowed, secondsRowed, heartRate, strokeRate, and distRowed are declared and given values during the running of this function for debugging purposes. After a string is inputted, it first checks for if it is am empty string, in which case it immediately returns false. Then, it checks for the minimum length. The shortest possible valid rower string is as follows:
+
+:01 1 s/m 1 m 1
+
+Counting the length of this string, we get 15. Thus, if the input string has a length of less than 15, the function automatically returns false. Then, the program gets rid of any leading whitespace. After all of this, it begins processing the string.
+
+Minutes: It checks to see if the first character is a nonzero number with either 1 or 2 digits or a ":". If it is a nonzero number, it processes that number and stores it in minutesRowed. If not, it sets minutesRowed to 0. If the resulting value of minutes is greater than 59, it returns false. Then the minutes data is eliminated from the string by using the substr method. Now, only seconds, stroke rate, distance rowed, and heart rate data should be left.
+
+Seconds: It checks that the first character in the newly formed string is a ":". If so, it checks if the next two characters are numbers. If so, it processes the next two numbers and stores this in the secondsRowed variable. If secondsRowed is greater than 59, it returns false. Then, the seconds data is eliminated from the string using the substr method and any whitespace after it is eliminated as well. Now, only stroke rate, distance rowed, and heart rate data should be left.
+
+Stroke Rate: It checks the 1st, 2nd, and 3rd characters in the string to figure out whether stroke rate is 1, 2, or 3 digits by checking if the 1st, 2nd, and 3rd characters are nonzero numbers or not. Then, it processes the numbers, storing the value in strokeRate. If the stroke rate is >999 or <=0, it returns false. It then eliminates the numbers from the string. It then checks if the first 3 characters of the newly formed string are " s/m", which is the unit for stroke rate. If not, it returns false. If  " s/m" is there, it eliminates " s/m" and any whitespace after that until a character is reached. Now, only distance rowed and heart rate data should be left.
+
+Distance Rowed: Using a while loop, the number of digits in distance rowed is determined by looping until a character that is not a number is reached. Then, using this, the distance rowed is processsed using a for-loop, where it processes the number of characters that was counted by the while loop as being numbers and assigns this to the variable distRowed. If the first digit is a 0 or the total distance rowed is 0, the function returns false. Then, it eliminates the numbers from the string using the substr method. It then checks if the next two characters are " m", which is the unit for distance rowed. If not, the function returns false. If " m" are the next 2 characters, it eliminates " m" and any whitespace after that from the string. Now, only heart rate data should be left.
+
+Heart Rate: Like distance rowed, it uses a while loop to determine how many digits heart rate has. Then, it processes these numbers and stores it in the heartRate variable. Heart rate is then verified that it is between 1 and 999, inclusive; if not, the function returns false. Then, the heart rate number is eliminated from the string. At this point, the string should be empty. If it is not, the function returns false, as there are extraneous characters in the string.
+
+Essentially, the functions repeatedly verifies that the next value that should be there is there, processes it, and verifies that what should come next should be there (whether it is whitespace, a number, a unit, the ":" character, etc.). This ensures that if any extra data is ever added in the string, whether it is at the start of a value (such as asdf14:15 at the start), in the middle of a value (such as 14asdf34 m for meter rowed), or at the end of a value (such as 28 s/masdf), the function will detect that it should not be there and return false.
+
+When the input string successfully passes all the tests in isValidRowerString and the function returns true, note that the program will have assigned correct values to minutesRowed, secondsRowed, heartRate, strokeRate, and distRowed. This, we can simply copy the code from isValidRowerString into all the other functions and return the desired variable. Thus, to implement the 5 remaining functions, first write an if-statement that tests if the supplied rowerString is valid using the isValidRowerString method. If isValidRowerString returns false, then have the function return -1. If it returns true, then execute the copy-pasted isValidRowerString code, and at the end of the function, return the desired variable.
+
+c. Test cases:
+Invalid test cases - these should return false for isValidRowerString and -1 for all other functions
+"" (empty string)
+"00:14 11 s/m 22 m 33" (if minutes is 0, it shouldn't be there)
+":2 11 s/m 22 m 33" (if seconds is <10, it should have leading 0)
+"01:14 11 s/m 22 m 33" (minutes shouldn't have leading 0s)
+"60:14 11 s/m 22 m 33" (minutes should be <=59)
+"44:60 11 s/m 22 m 33" (seconds should be <=59)
+"44: 14 11 s/m 22 m 33" (no space between minutes and seconds)
+"44 :14 11 s/m 22 m 33" (no space between minutes and seconds)
+"-01:14 11 s/m 22 m 33" (minutes should be positive, OR string should always start with whitespace or nonzero number)
+"44:14 asdf11 s/m 22 m 33" (stroke rate should start with nonzero number)
+"44:14 011 s/m 22 m 33" (stroke rate should start with nonzero number)
+"44:14 0 s/m 22 m 33" (stroke rate cannot be 0)
+"44:14 1000 s/m 22 m 33" (stroke rate must be <=999)
+"44:14 11s/m 22 m 33" (must be space between number and its units)
+"44:14 11  s/m 22 m 33" (must be one and only one space between value and its units)
+"44:14 11 22 m 33" (units cannot be missing from stroke rate)
+"44:14 11 m/s 22 m 33" (units must be correct, in this case s/m, not m/s)
+"44:14 11 s/m 02 m 33" (distance rowed cannot have leading 0s)
+"44:14 11 s/m asdf02 m 33" (distance rowed must start with nonzero number)
+"44:14 11 s/m 22.2 m 33" (distance rowed must be an int)
+"44:14 11 s/m 22m 33" (must be a space between value and units)
+"44:14 11 s/m 22   m 33" (must be one and only space between a value and its units)
+"44:14 11 s/m 0 m 33" (distance rowed cannot be 0)
+"44:14 11 s/m -100 m 33" (stroke rate cannot be negative, this case is caught by the function realizing that "-" is not a nonzero number)
+"44:14 11 s/m 22 m 0" (heart rate cannot be 0)
+"44:14 11 s/m 22 m 1000" (heart rate must be <=999)
+"44:14 11 s/m 22 m 33 " (there must be no characters, including whitespace, after heartrate)
+"44:14 11 s/m 22 m 33 asdf" (there must be no characters after heartrate)
+"44:14" (missing data that makes it a complete string)
+"44:14 11 s/m" (missing data)
+"44:14 22 m" (missing data)
+"44:14 11 s/m 22 m" (missing data)
+"44:14 22 m 33" (missing data)
+
+Valid test cases - should return true for isValidRowerString and the correct value for all other functions:
+"       44:14 11 s/m 22 m 33" (leading whitespace okay)
+"  44:14      11 s/m    22 m 33" (whitespace between values okay)
+":14 11 s/m 22 m 33" (when minutes = 0, start string with colon)
+":04 11 s/m 22 m 33" (when seconds <=10 and minutes = 0, seconds value must have leading 0)
+":00 11 s/m 22 m 33" (seconds value can equal 0 when minutes = 0)
+"44:00 11 s/m 22 m 33" (seconds value can equal 0 even when minutes not equal to 0)
+"44:59 11 s/m 22 m 33" (seconds value has a maximum of 59)
+"59:59 11 s/m 22 m 33" (minutes value has a maximum of 59)
+"44:14 1 s/m 22 m 33" (stroke rate of 1 s/m is legal)
+"44:14 999 s/m 22 m 33" (stroke rate of 999 s/m is legal)
+"44:14 11 s/m 1 m 33" (distance rowed must be at least 1)
+"44:14 11 s/m 1234567890 m 33" (distance rowed can be a big number)
+"44:14 11 s/m 22 m 1" (heart rate is at least 1)
+"44:14 11 s/m 22 m 999" (heart rate must be <=999)
+"44:14    11 s/m  22 m 999" (extra whitespace between values okay)
