@@ -1,0 +1,14 @@
+Danning Yu
+UCLA ID: 305087992
+
+For step 5, one set of input that provided nonsensical results was if I put in an integer that was negative. This caused at least one party percentage to be negative, which does not make sense in real life. Also, certain combinations of integer input for number of seats held, such as -10 for Democrats, 1 for Republicans, and 100 for Independents, caused percentage of seats held to be greater than 100% (in this case, Independents), which also does not make sense.
+Another set of input that provided unusual results was if 0 was inputted for the seats of all 3 parties. This caused "-nan(ind)%" to be reported for each party percentage and the final result was control going to the Democrats. This error is not unexpected because if all three seats held are 0, then there will be division by 0 in the program, which is not possible. 
+Finally, if the number of seats held by the Independent party was greater than the number of seats held by the Republicans, and likewise for the Democrats, the program would still report either the Democrat or Republican party having control, even though the Independent party should have control.
+
+For step 6, I introduced a logic error by changing the percentage multiplier for pctRep from 100.0 to 10.00. This causes pctRep to be too low by a factor of 10, thus allowing for incorrect results to be reported. The compiler did not report any error messages. 
+
+For step 7, I introduced two compiler errors by removing a semicolon at the end of line 10, which declares republicanSeats, and removed a closing quotation mark from line 36, which outputs a statement saying that Republicans have control. These two changes caused the compiler to report the following error messages:
+	error C2144: syntax error: 'int' should be preceded by ';'
+	error C2001: newline in constant
+	error C2143: syntax error: missing ';' before '}'
+The first line of error messages was caused by the removal of the semicolon, while the next two were caused by the removal of a closing quotation mark. By removing the quotation mark, the compiler now thinks "<< endl;" is part of what is to be printed. 
