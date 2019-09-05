@@ -6,11 +6,6 @@
 #include <cassert>
 using namespace std;
 
-//Implement other 5 functions and do project 3 report
-//false = 0, true is nonzero
-//ALWAYS TREAT CHARACTERS AS NUMBERS
-//REMEMBER TO TAKE OUT ALL // cerr WHEN FINISHED
-
 bool isValidRowerString(string rowerString);
 int totalDistance(string rowerString);
 int heartRate(string rowerString);
