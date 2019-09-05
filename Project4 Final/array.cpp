@@ -1,4 +1,4 @@
-//Danning Yu, 305087992
+//Danning Yu
 //CS31 Project 4
 #include <iostream>
 #include <string>
